@@ -11,8 +11,7 @@ import (
 type drv struct{}
 
 func (d *drv) Open(name string) (driver.Conn, error) {
-	sg := sendgrid.NewSendGridClientWithApiKey(name)
-	c := conn(*sg)
+	c := conn{sendgrid.NewSendGridClientWithApiKey(name)}
 	return &c, nil
 }
 
@@ -20,7 +19,9 @@ func init() {
 	emailsender.Register("sendgrid", &drv{})
 }
 
-type conn sendgrid.SGClient
+type conn struct {
+	*sendgrid.SGClient
+}
 
 func (c *conn) SendHTML(to []string, from, subj, html string) error {
 	msg := sendgrid.NewMail()
@@ -30,7 +31,7 @@ func (c *conn) SendHTML(to []string, from, subj, html string) error {
 	msg.SetSubject(subj)
 	msg.SetFrom(from)
 	msg.SetHTML(html)
-	return nil // c.Send(msg)
+	return c.Send(msg)
 }
 
 func (c *conn) SendPlainText(to []string, from, subj, plaintext string) error {
@@ -41,7 +42,7 @@ func (c *conn) SendPlainText(to []string, from, subj, plaintext string) error {
 	msg.SetSubject(subj)
 	msg.SetFrom(from)
 	msg.SetText(plaintext)
-	return nil // c.Send(msg)
+	return c.Send(msg)
 }
 
 func (c *conn) Close() error {
