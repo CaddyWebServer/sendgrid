@@ -1,5 +1,5 @@
-// Package sendgrid implements the email driver interface from
-// github.com/itsabot/abot/shared/interface/email
+// Package sendgrid implements the emailsender driver interface from
+// github.com/itsabot/abot/shared/interface/emailsender
 package sendgrid
 
 import (
